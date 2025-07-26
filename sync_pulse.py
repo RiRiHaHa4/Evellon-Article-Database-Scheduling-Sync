@@ -6,7 +6,7 @@ from notion_client import Client, APIResponseError
 
 try:
     notion = Client(auth=os.environ["NOTION_TOKEN"])
-    DB_ID = "2151f2862b90802aba98fc99afda5cd3"  # ← Your actual Notion database ID
+    DB_ID = "2151f2862b90802aba98fc99afda5cd3"  # ← Your actual database ID
     today = date.today().isoformat()
 
     print("🔍 Querying Notion database...")
@@ -15,7 +15,7 @@ try:
         filter={
             "and": [
                 {"property": "Publish Date", "date": {"on_or_before": today}},
-                {"property": "Pulse", "multi_select": {"contains": "Scheduled"}}
+                {"property": "Pulse", "select": {"equals": "Scheduled"}}
             ]
         }
     )
@@ -27,7 +27,7 @@ try:
             page_id=page["id"],
             properties={
                 "Pulse": {
-                    "multi_select": [{"name": "Live"}]
+                    "select": {"name": "Live"}
                 }
             }
         )

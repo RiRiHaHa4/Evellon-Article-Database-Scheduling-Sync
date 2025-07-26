@@ -2,7 +2,8 @@ name: Sync Notion Pulse
 on:
   schedule:
     - cron:  '5 16 * * *'  # runs daily at 00:05 Malaysia time (UTC+8)
-      workflow_dispatch:       # ← this line enables manual runs!
+  workflow_dispatch:        # ✅ manual run trigger (must be outside schedule)
+
 jobs:
   run:
     runs-on: ubuntu-latest

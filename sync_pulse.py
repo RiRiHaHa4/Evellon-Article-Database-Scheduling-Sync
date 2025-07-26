@@ -2,30 +2,40 @@
 """Turn 'Scheduled' → 'Live' when Publish Date arrives."""
 import os
 from datetime import date
-from notion_client import Client
+from notion_client import Client, APIResponseError
 
-notion = Client(auth=os.environ["NOTION_TOKEN"])
-DB_ID = "2151f2862b90802aba98fc99afda5cd3"  # <-- replace this with your 32-character Notion DB ID
-today = date.today().isoformat()
+try:
+    notion = Client(auth=os.environ["NOTION_TOKEN"])
+    DB_ID = "2151f2862b90802aba98fc99afda5cd3"  # ✅ Your actual database ID
+    today = date.today().isoformat()
 
-result = notion.databases.query(
-    database_id=DB_ID,
-    filter={
-        "and": [
-            {"property": "Publish Date", "date": {"on_or_before": today}},
-            {"property": "Pulse", "multi_select": {"contains": "Scheduled"}}
-        ]
-    }
-)
-
-for page in result["results"]:
-    notion.pages.update(
-        page_id=page["id"],
-        properties={
-            "Pulse": {
-                "multi_select": [{"name": "Live"}]
-            }
+    print("🔍 Querying Notion database...")
+    result = notion.databases.query(
+        database_id=DB_ID,
+        filter={
+            "and": [
+                {"property": "Publish Date", "date": {"on_or_before": today}},
+                {"property": "Pulse", "multi_select": {"contains": "Scheduled"}}
+            ]
         }
     )
 
-print(f"Marked {len(result['results'])} page(s) Live.")
+    print(f"✅ Found {len(result['results'])} matching page(s). Updating...")
+
+    for page in result["results"]:
+        notion.pages.update(
+            page_id=page["id"],
+            properties={
+                "Pulse": {
+                    "multi_select": [{"name": "Live"}]
+                }
+            }
+        )
+    print("✅ Update complete.")
+
+except APIResponseError as e:
+    print("❌ Notion API error:", e.message)
+    exit(1)
+except Exception as ex:
+    print("❌ Unexpected error:", str(ex))
+    exit(1)

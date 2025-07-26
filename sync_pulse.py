@@ -6,7 +6,7 @@ from notion_client import Client, APIResponseError
 
 try:
     notion = Client(auth=os.environ["NOTION_TOKEN"])
-    DB_ID = "2151f2862b90802aba98fc99afda5cd3"  # ✅ Your actual database ID
+    DB_ID = "2151f2862b90802aba98fc99afda5cd3"  # ← Your actual Notion database ID
     today = date.today().isoformat()
 
     print("🔍 Querying Notion database...")
@@ -34,7 +34,7 @@ try:
     print("✅ Update complete.")
 
 except APIResponseError as e:
-    print("❌ Notion API error:", e.message)
+    print("❌ Notion API error:", e)
     exit(1)
 except Exception as ex:
     print("❌ Unexpected error:", str(ex))

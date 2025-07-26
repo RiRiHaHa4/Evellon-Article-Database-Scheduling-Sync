@@ -1,0 +1,16 @@
+name: Sync Notion Pulse
+on:
+  schedule:
+    - cron:  '5 16 * * *'  # runs daily at 00:05 Malaysia time (UTC+8)
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: pip install notion-client
+      - run: python sync_pulse.py
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
